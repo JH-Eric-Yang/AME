@@ -1,4 +1,23 @@
-# AME — Autonomous Multimodal Experiment
+<p align="center">
+  <a href="https://ameexp.com">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/assets/logo-dark.svg">
+      <img src="docs/assets/logo.svg" alt="AME logo" width="112">
+    </picture>
+  </a>
+</p>
+
+<h1 align="center">AME — Autonomous Multimodal Experiment</h1>
+
+<p align="center">
+  Video-chat experiments that run without an experimenter.
+</p>
+
+<p align="center">
+  <a href="https://ameexp.com"><b>Website</b></a> ·
+  <a href="https://ameexp.com/docs"><b>Documentation</b></a> ·
+  <a href="https://ameexp.com/admin/login"><b>Admin dashboard</b></a>
+</p>
 
 AME (say "a-meh") is a web platform for behavioural science. You use it to
 design, run and manage online experiments that collect multimodal data:
@@ -13,6 +32,7 @@ checks their position on the camera, and stores their data.
 
 ## Contents
 
+- [Use the hosted version](#use-the-hosted-version)
 - [Why AME](#why-ame)
 - [Features](#features)
 - [How an experiment is built](#how-an-experiment-is-built)
@@ -23,8 +43,24 @@ checks their position on the camera, and stores their data.
 - [Configuration](#configuration)
 - [Tests](#tests)
 - [Project structure](#project-structure)
+- [Authors](#authors)
 - [Citation](#citation)
 - [License](#license)
+
+## Use the hosted version
+
+We run AME at **[ameexp.com](https://ameexp.com)**. You do not need to install
+anything to use it.
+
+1. Go to [ameexp.com/admin/login](https://ameexp.com/admin/login).
+2. Create an account. An administrator reviews your request.
+3. After approval, log in and build your experiment in the dashboard.
+4. Send the experiment link to your participants.
+
+The [documentation](https://ameexp.com/docs) on the website explains each
+progress, routine and element.
+
+To run AME on your own server, see [Install and run](#install-and-run).
 
 ## Why AME
 
@@ -89,7 +125,8 @@ Predefined routines:
 
 - **Layout:** `routine-borderless`, `routine-card`
 - **Function:** `routine-consent`, `routine-end`, `routine-pos-check`,
-  `routine-video-chat`, `routine-survey`
+  `routine-matching`, `routine-video-chat`, `routine-end-matching`,
+  `routine-survey`
 
 Elements send four types of events:
 
@@ -244,12 +281,19 @@ AME/
 └── e2e/       Playwright end-to-end tests
 ```
 
+## Authors
+
+- **Jiahao Eric Yang**, University of Bath
+- **Sotaro Kita**, University of Warwick
+
+To contact us, use the contact form on [ameexp.com](https://ameexp.com).
+
 ## Citation
 
 If you use AME in your research, please cite:
 
 > Yang, J., & Kita, S. *AME: The Autonomous Multimodal Experiment System.*
-> Department of Psychology, University of Warwick. Manuscript in preparation.
+> Manuscript in preparation. https://ameexp.com
 
 We will add the full reference when the paper is published.
 
