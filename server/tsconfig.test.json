@@ -1,0 +1,32 @@
+// Typecheck-only project covering the source tree WITH tests included.
+//
+// tsconfig.json excludes src/**/__tests__/** so that test code never reaches
+// dist. Without this project those files would have no standing typecheck at
+// all, because vitest transpiles without checking types.
+//
+// The six files quarantined below carry 32 type errors that PRE-DATE this
+// project and were simply never visible: tsconfig.json has always excluded
+// `**/*.test.ts`, so no build has ever typechecked them. They are all mock-row
+// shape drift — fixture literals missing columns the Prisma model has gained
+// (participantIdParam, initialProperties, conditionProperties) and `status` /
+// `role` typed as string rather than the generated enum. Excluding them keeps
+// this script green and useful today; each should be deleted from this list as
+// its owning suite is repaired, and the list should never grow.
+{
+  "extends": "./tsconfig.json",
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/__tests__/admin.test.ts",
+    "src/__tests__/integration.test.ts",
+    "src/__tests__/jsonExport.test.ts",
+    "src/__tests__/propertySystem.test.ts",
+    "src/__tests__/randomization.test.ts",
+    "src/__tests__/socket.test.ts"
+  ],
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["vitest/globals", "node"]
+  }
+}

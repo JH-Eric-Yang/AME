@@ -1,0 +1,22 @@
+node_modules/
+dist/
+.env
+# Made by scripts/deploy.sh on the server.
+ecosystem.config.cjs
+.svelte-kit/
+build/
+*.log
+# Runtime upload directories, anchored: a bare `uploads/` also matched the
+# server/src/uploads/ SOURCE modules, and a bare `assets/` would match
+# client/src/lib/assets.
+/server/uploads/
+/server/assets/
+.DS_Store
+test-results/
+playwright-report/
+
+# Media files the e2e global setup makes with ffmpeg.
+/e2e/.cache/
+
+# Tutorial videos and pages that npm run tutorials makes.
+/tutorial-output/

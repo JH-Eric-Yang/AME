@@ -1,0 +1,83 @@
+/*
+ * free-media-fit — a stimulus fits inside its free-placement box, never
+ * cropped by it.
+ *
+ * THE RULE THIS FILE EXISTS FOR
+ *
+ * `freeStyle` puts `overflow: hidden` on every free-placement box, and says
+ * why: a free box has an explicit height (§6.1) so collisions can be checked,
+ * and the Inspector promises that content taller than its box "will be clipped
+ * for participants". For text that promise is the right one.
+ *
+ * For a stimulus it is not. An image whose box is shorter than the image was
+ * silently cut off: `<img>` was left at its natural size (ElImage's
+ * `object-fit` is inert while both width and height are `auto`, so the
+ * declaration that looked like it was fitting the media did nothing), and the
+ * box's `overflow: hidden` removed the rest. Measured: a 400x400 image in a
+ * 125x42px box rendered 118x118 with 76px gone. Nothing on the canvas, in the
+ * Inspector, or in the stored data recorded that the participant had been
+ * shown a different stimulus from the one the experimenter authored.
+ *
+ * So a box holding media caps that media to the box instead. `max-width` and
+ * `max-height` are used rather than a forced `width: 100%`, so a researcher's
+ * explicit width/height parameters still apply up to the box's own size; CSS
+ * 2.1 §10.4 shrinks a replaced element that violates both constraints while
+ * keeping its aspect ratio, which is letterboxing arrived at without
+ * overriding anything the element authored. An element that explicitly asks
+ * for `object-fit: cover` still crops, because that crop was chosen.
+ *
+ * BOTH RENDERERS, ONE FILE
+ *
+ * This stylesheet is global and is imported by both places that render a free
+ * box — `routines/LayoutStage.svelte` (the participant) and
+ * `admin/canvas/FreeCanvas.svelte` (the builder). They must never be given
+ * different rules: the whole point of laying the canvas out at the stage's own
+ * pixel size is that the researcher's screen and the participant's agree. The
+ * class name is `FreeMediaFitClass`, declared in `ame-shared/layout` next to
+ * `freeStyle`, so neither renderer can spell it its own way.
+ *
+ * SCOPE
+ *
+ * Only the two types that `hasIntrinsicSize` names — image and video — and
+ * only through their own wrapper classes. Deliberate cropping elsewhere in the
+ * client is left alone: `ElRecorder` and `DeviceSlot` use `object-fit: cover`
+ * on a webcam self-view, where filling the frame is the intended behaviour and
+ * nothing authored is being removed. `audio` is excluded for the same reason
+ * `hasIntrinsicSize` excludes it — its stimulus is the sound, which no box can
+ * crop, and its controls bar is the browser's own furniture.
+ */
+
+/*
+ * A percentage `max-height` needs a definite height to resolve against, so
+ * every wrapper between the box and the media stretches to the box. This list
+ * is the wrapper chain both renderers put there; the rest of the builder's
+ * chain (`.element-card`, `.preview`, `.live`) is already height-definite.
+ *
+ * Keep it in step with the components that own these class names —
+ * `TimedElement.svelte`, `ElImage.svelte`, `ElVideo.svelte`. A new wrapper
+ * added between a free box and its media without a line here would take the
+ * cropping back, silently, which is why `e2e/free-placement.spec.ts` measures
+ * the rendered image against its box rather than trusting this file.
+ */
+.free-media-fit .timed-element,
+.free-media-fit .el-image,
+.free-media-fit .el-video {
+  height: 100%;
+}
+
+/*
+ * ElImage and ElVideo centre their media with `display: flex`, and flex's
+ * default `align-items: stretch` would pull an auto-height <img> to the full
+ * box height and distort it. Centring keeps the cross size `auto`, which is
+ * what lets §10.4 preserve the ratio — and centres the letterbox bands.
+ */
+.free-media-fit .el-image,
+.free-media-fit .el-video {
+  align-items: center;
+}
+
+.free-media-fit .el-image img,
+.free-media-fit .el-video video {
+  max-width: 100%;
+  max-height: 100%;
+}

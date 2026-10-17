@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
+  },
+  "include": ["src/**/*"],
+  // Test code must never reach dist. `**/*.test.ts` alone is not enough: the
+  // rotation suite's helpers under src/__tests__/helpers/ are plain .ts and
+  // would otherwise be emitted into the production artefact. tsconfig.test.json
+  // re-includes this tree for typechecking only.
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "src/**/__tests__/**"]
+}

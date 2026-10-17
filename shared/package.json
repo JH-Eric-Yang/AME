@@ -1,0 +1,38 @@
+{
+  "name": "ame-shared",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/types.ts",
+  "types": "./src/types.ts",
+  "exports": {
+    ".": "./src/types.ts",
+    "./defaultLayouts": "./src/defaultLayouts.ts",
+    "./propertyFilters": "./src/propertyFilters.ts",
+    "./blockOwnership": "./src/blockOwnership.ts",
+    "./interactionGroups": "./src/interactionGroups.ts",
+    "./contentValidation": "./src/contentValidation.ts",
+    "./randomization": "./src/randomization.ts",
+    "./parameterHelp": "./src/parameterHelp.ts",
+    "./sessionDesign": "./src/sessionDesign.ts",
+    "./assetUsage": "./src/assetUsage.ts",
+    "./roleAssignment": "./src/roleAssignment.ts",
+    "./surfaces": "./src/surfaces.ts",
+    "./visibility": "./src/visibility.ts",
+    "./layout": "./src/layout/index.ts",
+    "./textStyle": "./src/textStyle.ts",
+    "./refs": "./src/refs.ts",
+    "./participantRef": "./src/participantRef.ts",
+    "./progressSequence": "./src/progressSequence.ts",
+    "./refValidation": "./src/refValidation.ts",
+    "./videoChat": "./src/videoChat.ts",
+    "./producers": "./src/producers.ts",
+    "./elementFamilies": "./src/elementFamilies.ts",
+    "./errors": "./src/errors.ts",
+    "./timer": "./src/timer.ts",
+    "./tutorials": "./src/tutorials.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}

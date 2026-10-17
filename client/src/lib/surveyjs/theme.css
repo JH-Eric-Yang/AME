@@ -1,0 +1,148 @@
+/* AME — SurveyJS theme overrides
+   Applies on top of survey-core/defaultV2.min.css */
+
+:root {
+  /* Primary colors */
+  --sjs-primary-backcolor: #0a0a0a;
+  --sjs-primary-backcolor-light: #f5f5f5;
+  --sjs-primary-backcolor-dark: #333;
+  --sjs-primary-forecolor: #fff;
+  --sjs-primary-forecolor-light: rgba(255, 255, 255, 0.75);
+
+  /* General */
+  --sjs-general-backcolor: #fff;
+  --sjs-general-backcolor-dim: #fafafa;
+  --sjs-general-backcolor-dim-light: #f5f5f5;
+  --sjs-general-forecolor: #0a0a0a;
+  --sjs-general-forecolor-light: #777;
+  --sjs-general-dim-forecolor: #333;
+  --sjs-general-dim-forecolor-light: #777;
+
+  /* Borders */
+  --sjs-border-default: #e0e0e0;
+  --sjs-border-light: #efefef;
+  --sjs-border-inside: #efefef;
+
+  /* Shadows — remove all */
+  --sjs-shadow-small: none;
+  --sjs-shadow-small-reset: none;
+  --sjs-shadow-medium: none;
+  --sjs-shadow-large: none;
+  --sjs-shadow-inner: none;
+  --sjs-shadow-inner-reset: none;
+
+  /* Corner radius */
+  --sjs-corner-radius: 10px;
+
+  /* Font */
+  --sjs-font-family: 'Outfit', sans-serif;
+  --sjs-font-size: 14px;
+
+  /* Article (question content) */
+  --sjs-article-font-default-color: #0a0a0a;
+  --sjs-article-font-large-color: #0a0a0a;
+
+  /* Editor (input fields) */
+  --sjs-editor-background: #fff;
+  --sjs-editorpanel-backcolor: #fafafa;
+
+  /* Special colors — neutral */
+  --sjs-special-red: #cc0000;
+  --sjs-special-red-light: rgba(204, 0, 0, 0.1);
+  --sjs-special-green: #333;
+  --sjs-special-blue: #0a0a0a;
+  --sjs-special-yellow: #777;
+}
+
+/* Remove card shadows on questions */
+.sd-element--with-frame {
+  box-shadow: none !important;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+}
+
+/* Progress bar — thin black line */
+.sd-progress__bar {
+  background-color: #0a0a0a !important;
+}
+
+.sd-progress {
+  height: 3px !important;
+}
+
+/* Navigation buttons */
+.sd-btn {
+  background: #0a0a0a !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 0.75rem 2rem !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  text-transform: none !important;
+  font-weight: 400 !important;
+}
+
+.sd-btn:hover {
+  background: #333 !important;
+}
+
+.sd-btn--action.sd-navigation__prev-btn {
+  background: #fff !important;
+  color: #0a0a0a !important;
+  border: 1px solid #e0e0e0 !important;
+}
+
+.sd-btn--action.sd-navigation__prev-btn:hover {
+  background: #f5f5f5 !important;
+}
+
+/* Rating — black outline style */
+.sd-rating__item--selected {
+  background-color: #0a0a0a !important;
+  border-color: #0a0a0a !important;
+  color: #fff !important;
+}
+
+/* Checkboxes and radios — black when selected */
+.sd-selectbase__item input:checked + .sd-selectbase__label .sd-item__decorator {
+  border-color: #0a0a0a !important;
+  background-color: #0a0a0a !important;
+}
+
+/* Matrix header */
+.sd-matrix__cell--header {
+  color: #0a0a0a !important;
+  font-weight: 500 !important;
+}
+
+/* Required asterisk */
+.sd-question__required-text {
+  color: #cc0000 !important;
+}
+
+/* Remove page title background color */
+.sd-page__title {
+  color: #0a0a0a !important;
+}
+
+/* Boolean toggle — black when true */
+.sd-boolean__thumb {
+  background-color: #0a0a0a !important;
+}
+
+/* nouislider overrides */
+.noUi-connect {
+  background: #0a0a0a !important;
+}
+
+.noUi-handle {
+  border-color: #0a0a0a !important;
+  background: #0a0a0a !important;
+}
+
+.noUi-handle::before,
+.noUi-handle::after {
+  background: #fff !important;
+}

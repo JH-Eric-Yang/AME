@@ -27,9 +27,6 @@ AME runs an experiment without an experimenter in the session. The server
 matches participants into video calls, gives each participant their content,
 checks their position on the camera, and stores their data.
 
-> **Status:** This repository is in preparation. The source code will come
-> here soon. This README describes the platform that we will release.
-
 ## Contents
 
 - [Use the hosted version](#use-the-hosted-version)
@@ -40,6 +37,7 @@ checks their position on the camera, and stores their data.
 - [Architecture](#architecture)
 - [Requirements](#requirements)
 - [Install and run](#install-and-run)
+- [Set up a production server](#set-up-a-production-server)
 - [Configuration](#configuration)
 - [Tests](#tests)
 - [Project structure](#project-structure)
@@ -180,50 +178,76 @@ One Express process serves the REST API, Socket.IO and the tus uploads.
    cd AME
    ```
 
-2. Install the dependencies for all workspaces.
+2. Start PostgreSQL and Redis.
+
+3. Run the setup script.
 
    ```bash
-   npm install
+   ./scripts/setup.sh
    ```
 
-3. Make a file `.env` in the repository root. See [Configuration](#configuration).
+   The script checks the requirements, makes `.env` with a random JWT
+   secret, installs the packages, applies the database migrations and makes
+   the first administrator account. You can run it again: it keeps an
+   existing `.env` and an existing account.
 
-4. Start PostgreSQL and Redis.
-
-5. Apply the database migrations.
+4. Start the server.
 
    ```bash
-   cd server
-   npx prisma migrate dev
+   npm run dev --workspace server
    ```
 
-6. Create the first administrator account from `ADMIN_EMAIL` and
-   `ADMIN_PASSWORD`.
+5. In a second terminal, start the client.
 
    ```bash
-   npx prisma db seed
+   npm run dev --workspace client
    ```
 
-7. Start the server.
+6. Open <http://localhost:5173/admin/login> and log in as the administrator.
+
+To get an example experiment, run `npm run seed:demo`.
+
+New experimenters register on the login page. The administrator approves each
+new account in the **Accounts** tab of the dashboard.
+
+To set up AME by hand instead, copy `.env.example` to `.env`, set the values,
+then run `npm install`, `npx prisma migrate deploy` in `server/`, and
+`npx prisma db seed` in `server/` with `ADMIN_EMAIL`, `ADMIN_PASSWORD` and
+`ADMIN_NAME` set in the shell.
+
+## Set up a production server
+
+`scripts/deploy.sh` sets up AME on a fresh Ubuntu server (22.04 or later).
+
+> **Warning:** Browsers give camera access only on an HTTPS page. Point the
+> DNS record of your domain to the server before you start, so that the
+> script can get a certificate.
+
+1. Open ports 22, 80 and 443 in the firewall of your cloud provider. For the
+   TURN relay, also open 3478 (UDP and TCP) and 49160–49200 (UDP).
+2. Clone the repository on the server and run the script as root.
 
    ```bash
-   npm run dev
+   git clone https://github.com/JH-Eric-Yang/AME.git
+   cd AME
+   sudo ./scripts/deploy.sh
    ```
 
-8. In a second terminal, start the client.
+3. Give the domain, the administrator account and your TURN choice when the
+   script asks for them.
 
-   ```bash
-   cd client
-   npm run dev
-   ```
+The script installs Node.js, PostgreSQL, Redis, nginx, certbot, PM2 and
+(optionally) coturn. It runs AME as the system user `ame` from `/opt/ame`,
+with the configuration in `/opt/ame/.env`. nginx sends `/api/`,
+`/socket.io/` and `/health` to the server (port 3001) and all other paths to
+the client (port 3000).
 
-9. Open the client URL and log in at `/admin/login`.
-
-To get an example experiment, run `npm run seed:demo` from the repository root.
+To install a new version later, run `sudo /opt/ame/scripts/update.sh`.
 
 ## Configuration
 
-Put these values in `.env` in the repository root.
+Put these values in `.env` in the repository root. The server and the client
+both read this file. `.env.example` shows each value.
 
 | Variable | Required | Description |
 |---|---|---|
@@ -231,31 +255,20 @@ Put these values in `.env` in the repository root.
 | `REDIS_URL` | Yes | The Redis connection string. |
 | `JWT_SECRET` | Yes | A long random string. The server signs login tokens with it. |
 | `PORT` | No | The server port. The default is `3001`. |
-| `CLIENT_URL` | No | The client origin. The server permits requests from it. |
-| `ADMIN_EMAIL` | For the seed | The email of the first administrator. |
-| `ADMIN_PASSWORD` | For the seed | The password of the first administrator. |
-| `ADMIN_NAME` | No | The name of the first administrator. |
+| `CLIENT_URL` | No | The client origin. In production, the server permits requests only from it. |
+| `VITE_SERVER_URL` | In production | The URL at which the browser reaches the server, for example `https://ame.example.org`. The client reads it when you build it. In development, leave it empty: the client then uses port 3001 on the same host. |
 | `TURN_URLS` | No | TURN server URLs. Use with `TURN_SECRET`. |
 | `TURN_SECRET` | No | The shared secret of the TURN server. |
 | `TURN_TTL_SECONDS` | No | How long a TURN password stays valid. The default is 4 hours. |
 
-The client reads the server URL from `VITE_SERVER_URL`. The client and the
-server must use the same URL.
+In production, the server does not start without `JWT_SECRET`.
 
 > **Warning:** Do not serve the TURN secret or the TURN password from an open
 > URL. Other people can then use your relay.
 
-Example:
-
-```ini
-DATABASE_URL=postgresql://ame:ame@localhost:5432/ame
-REDIS_URL=redis://localhost:6379
-JWT_SECRET=change-this-to-a-long-random-string
-PORT=3001
-CLIENT_URL=http://localhost:5173
-ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD=change-this
-```
+The seed reads the first administrator from `ADMIN_EMAIL`, `ADMIN_PASSWORD`
+and `ADMIN_NAME`. Give these in the shell, not in `.env`, so that the
+password does not stay in a file. `scripts/setup.sh` does this for you.
 
 ## Tests
 
@@ -277,7 +290,7 @@ AME/
 ├── client/    SvelteKit app: admin dashboard, experiment runner, phone page
 ├── server/    Express app: REST API, Socket.IO handlers, Prisma schema
 ├── shared/    TypeScript types and helpers for the client and the server
-├── scripts/   Seed scripts for example experiments
+├── scripts/   Setup, deploy and update scripts, and seeds for example experiments
 └── e2e/       Playwright end-to-end tests
 ```
 

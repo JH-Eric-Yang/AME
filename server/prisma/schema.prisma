@@ -1,0 +1,384 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Experimenter ───────────────────────────────────────
+
+enum ExperimenterRole {
+  ADMIN
+  EXPERIMENTER
+}
+
+enum AccountStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Experimenter {
+  id        String           @id @default(uuid())
+  email     String           @unique
+  password  String
+  name      String
+  role      ExperimenterRole @default(EXPERIMENTER)
+  status    AccountStatus    @default(PENDING)
+  createdAt DateTime         @default(now())
+
+  experiments ExperimenterExperiment[]
+}
+
+model ExperimenterExperiment {
+  experimenterId String
+  experimentId   String
+
+  experimenter Experimenter @relation(fields: [experimenterId], references: [id], onDelete: Cascade)
+  experiment   Experiment   @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+
+  @@id([experimenterId, experimentId])
+}
+
+// ── Experiment ─────────────────────────────────────────
+
+model Experiment {
+  id          String  @id @default(uuid())
+  name        String
+  description String  @default("")
+  visible     Boolean @default(false)
+  allowNew    Boolean @default(true)
+  img         String?
+
+  // Capabilities
+  avCollection        Boolean    @default(false)
+  bodyDetection       Boolean    @default(false)
+  videoChat           Boolean    @default(false)
+  supplementaryDevice DeviceMode @default(NONE)
+
+  // Timing
+  activeTime   Int @default(30)
+  rollBackTime Int @default(60)
+
+  // Session
+  participantsPerSession Int @default(1)
+
+  // Name of the URL query parameter carrying an external participant id
+  // (e.g. "PROLIFIC_PID"). Null disables external id capture.
+  participantIdParam String?
+
+  // Conditions
+  conditions          String[] @default([])
+  currentCondition    String?
+  randomization       Boolean  @default(false)
+  randomizationConfig Json?
+
+  // Matching
+  matchingStrategy    MatchingStrategy @default(FIFO)
+  initialProperties   Json             @default("{}")
+  conditionProperties Json             @default("{}")
+
+  // Structure
+  routines Json
+
+  // Session Designer blocks. An array of SessionDesign objects (see
+  // shared/src/sessionDesign.ts); null on every experiment authored before the
+  // designer existed, so every reader must tolerate null.
+  sessionDesigns Json?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  experimenters ExperimenterExperiment[]
+  participants  Participant[]
+  contents      ExperimentContent[]
+  results       ExperimentResult[]
+  sessions      Session[]
+  uploads       Upload[]
+  assets        Asset[]
+  roleCycle     RoleAssignmentCycle?
+  errorGroups   ErrorGroup[]
+}
+
+enum DeviceMode {
+  NONE
+  CAMERA
+  CONTROLLER
+}
+
+enum MatchingStrategy {
+  FIFO
+  PROPERTY
+  MANUAL
+}
+
+// ── Participant ────────────────────────────────────────
+
+model Participant {
+  id             String  @id @default(uuid())
+  experimentId   String
+  experimenterId String?
+
+  // Identity
+  email      String?
+  password   String?
+  responseId String  @default(uuid())
+  // Value captured from the experiment's participantIdParam, when present.
+  externalId String?
+
+  // Connection
+  roomId String?
+
+  // Experiment state
+  condition        String?
+  progressSequence Json?
+  progress         Int     @default(0)
+  currentStage     Int     @default(0)
+
+  // Status
+  isLoggedIn Boolean @default(false)
+  consent    Boolean @default(false)
+  completion Boolean @default(false)
+  withdraw   Boolean @default(false)
+  role       Int     @default(0)
+  properties Json    @default("{}")
+
+  // Timing
+  lastLogTime DateTime?
+  createdAt   DateTime  @default(now())
+
+  // Relations
+  experiment          Experiment           @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+  sessionParticipants SessionParticipant[]
+  results             ExperimentResult[]
+  uploads             Upload[]
+
+  @@index([experimentId, externalId])
+}
+
+// ── Session ────────────────────────────────────────────
+
+model Session {
+  id                     String        @id @default(uuid())
+  experimentId           String
+  routineName            String
+  status                 SessionStatus @default(WAITING)
+  matchProgress          Int           @default(0)
+  matchedAt              DateTime?
+  sharedProgressSequence Json?
+  blockId                String?
+  createdAt              DateTime      @default(now())
+
+  experiment   Experiment           @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+  participants SessionParticipant[]
+  groupings    SessionGrouping[]
+}
+
+/// Counterbalancing state. Keyed per EXPERIMENT, not per routine: a study with
+/// two matching routines shares one cycle, because two counters would drift and
+/// neither would describe the design.
+model RoleAssignmentCycle {
+  experimentId String   @id
+  position     Int      @default(0)
+  blockOrder   Json?
+  updatedAt    DateTime @updatedAt
+
+  experiment Experiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+}
+
+model SessionParticipant {
+  id            String                   @id @default(uuid())
+  sessionId     String
+  participantId String
+  seat          Int                      @default(0)
+  slotName      String?
+  status        SessionParticipantStatus @default(ACTIVE)
+  droppedAt     DateTime?
+
+  session     Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  participant Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, participantId])
+}
+
+/// One row per interaction group per progress step. Every member of the group
+/// computes the same (sessionId, progress, groupIndex) and upserts onto it, so
+/// N participants converge on a single provenance row rather than N duplicates.
+model SessionGrouping {
+  id             String   @id @default(uuid())
+  sessionId      String
+  progress       Int
+  trialNumber    Int      @default(1)
+  routineName    String
+  groupIndex     Int
+  /// Seats in this group, ascending. Parallel to participantIds.
+  seats          Int[]
+  /// Participant ids in this group, ordered to match seats.
+  participantIds String[]
+  createdAt      DateTime @default(now())
+
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, progress, groupIndex])
+  @@index([sessionId])
+}
+
+enum SessionStatus {
+  WAITING
+  ACTIVE
+  CLOSED
+}
+
+enum SessionParticipantStatus {
+  ACTIVE
+  DROPPED
+}
+
+// ── Experiment Content ─────────────────────────────────
+
+model ExperimentContent {
+  id           String  @id @default(uuid())
+  experimentId String
+  progress     Int
+  trialNumber  Int     @default(1)
+  routine      String
+  content      Json
+  condition    String  @default("Basic")
+  description  String?
+
+  experiment Experiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+
+  @@index([experimentId, progress])
+}
+
+// ── Experiment Result ──────────────────────────────────
+
+model ExperimentResult {
+  id            String   @id @default(uuid())
+  experimentId  String
+  participantId String
+  responseId    String
+  progress      Int
+  trial         Int      @default(1)
+  routine       String
+  response      Json
+  trialInfo     Json?
+  createdAt     DateTime @default(now())
+
+  experiment  Experiment  @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+  participant Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@index([experimentId, participantId])
+}
+
+// ── Upload ─────────────────────────────────────────────
+
+model Upload {
+  id            String       @id @default(uuid())
+  experimentId  String
+  participantId String
+  progress      Int
+  trial         Int
+  elementName   String
+  timestamp     DateTime
+  fileName      String
+  mimeType      String       @default("video/webm")
+  totalSize     BigInt       @default(0)
+  status        UploadStatus @default(UPLOADING)
+  filePath      String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  experiment  Experiment  @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+  participant Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@index([experimentId, participantId])
+}
+
+model Asset {
+  id           String   @id @default(uuid())
+  experimentId String
+  fileName     String
+  mimeType     String
+  size         BigInt   @default(0)
+  filePath     String?
+  createdAt    DateTime @default(now())
+
+  experiment Experiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+
+  @@index([experimentId])
+}
+
+enum UploadStatus {
+  UPLOADING
+  COMPLETE
+  FAILED
+  SAVED_LOCALLY
+}
+
+// ── Error log ──────────────────────────────────────────
+
+enum ErrorSource {
+  SERVER_HTTP
+  SERVER_SOCKET
+  SERVER_TASK // timers, sweeps, flushes — no request or socket
+  CLIENT // participant's browser
+}
+
+enum ErrorStatus {
+  OPEN
+  RESOLVED
+}
+
+model ErrorGroup {
+  id          String      @id @default(uuid())
+  /** sha256 of source + name + normalised message + top frame + scope. Unique. */
+  fingerprint String      @unique
+  source      ErrorSource
+  /** Error class or code, e.g. "PrismaClientKnownRequestError", "NotAllowedError". */
+  name        String
+  /** The message as first seen, truncated to 500 chars. */
+  message     String      @db.Text
+  /** Null for platform-wide errors with no experiment context. */
+  experimentId String?
+  experiment   Experiment? @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+
+  count       Int         @default(0)
+  firstSeenAt DateTime    @default(now())
+  lastSeenAt  DateTime    @default(now())
+
+  status      ErrorStatus @default(OPEN)
+  resolvedAt  DateTime?
+  /** The resolving Experimenter's id. Deliberately not a foreign key: a
+   *  deleted account must not cascade away the error history. */
+  resolvedById String?
+
+  events ErrorEvent[]
+
+  @@index([experimentId, status, lastSeenAt])
+  @@index([lastSeenAt])
+}
+
+model ErrorEvent {
+  id            String   @id @default(uuid())
+  groupId       String
+  group         ErrorGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  occurredAt    DateTime @default(now())
+
+  participantId String?
+  responseId    String?
+  routine       String?
+  progress      Int?
+
+  /** { method, url } | { event } | { userAgent, platform, url } — never a body. */
+  context       Json?
+  /** Truncated to 8 KB. */
+  stack         String?  @db.Text
+  message       String   @db.Text
+
+  @@index([groupId, occurredAt])
+}
