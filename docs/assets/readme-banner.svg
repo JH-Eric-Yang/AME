@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 352" width="1200" height="352" role="img" aria-label="AME runs a session from consent to the end, with no experimenter present">
+<g font-family="-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif">
+<g transform="translate(48 34) scale(1.36)"><rect x="10" y="4" width="36" height="34" rx="9" fill="#0a0a0a"/><circle cx="28" cy="21" r="10" fill="#ff3d00"/><path d="M28 38 L50 52 H6 Z" fill="#c4c4c4"/></g>
+<text x="138" y="88" font-size="54" font-weight="700" letter-spacing="-1.5" fill="#0a0a0a">AME</text>
+<text x="140" y="120" font-size="20" fill="#555555">Autonomous Multimodal Experiment</text>
+<circle cx="64" cy="201" r="8" fill="#0a0a0a"/><path d="M50 227 a14 14 0 0 1 28 0 Z" fill="#0a0a0a"/>
+<path d="M86 212 C 112 212, 112 252, 140 252" fill="none" stroke="#0a0a0a" stroke-width="2"/>
+<circle cx="64" cy="281" r="8" fill="#0a0a0a"/><path d="M50 307 a14 14 0 0 1 28 0 Z" fill="#0a0a0a"/>
+<path d="M86 292 C 112 292, 112 252, 140 252" fill="none" stroke="#0a0a0a" stroke-width="2"/>
+<line x1="140" y1="252" x2="180" y2="252" stroke="#0a0a0a" stroke-width="2"/>
+<rect x="181" y="209.0" width="150" height="86" rx="15" fill="#ffffff" stroke="#0a0a0a" stroke-width="2"/>
+<rect x="244.0" y="240" width="24" height="24" rx="4" fill="#0a0a0a"/>
+<text x="256.0" y="328.0" font-size="16" text-anchor="middle" fill="#555555">Consent</text>
+<line x1="332" y1="252" x2="374" y2="252" stroke="#0a0a0a" stroke-width="2"/>
+<rect x="375" y="209.0" width="150" height="86" rx="15" fill="#ffffff" stroke="#0a0a0a" stroke-width="2"/>
+<path d="M450.0 237 L466.0 265 H434.0 Z" fill="#c4c4c4"/>
+<text x="450.0" y="328.0" font-size="16" text-anchor="middle" fill="#555555">Position check</text>
+<line x1="526" y1="252" x2="568" y2="252" stroke="#0a0a0a" stroke-width="2"/>
+<rect x="568" y="208.0" width="152" height="88" rx="16" fill="#0a0a0a"/>
+<circle cx="620.0" cy="252" r="16" fill="#ff3d00"/>
+<circle cx="668.0" cy="252" r="16" fill="#ff3d00"/>
+<text x="644.0" y="328.0" font-size="16" text-anchor="middle" fill="#555555">Video call</text>
+<line x1="720" y1="252" x2="762" y2="252" stroke="#0a0a0a" stroke-width="2"/>
+<rect x="763" y="209.0" width="150" height="86" rx="15" fill="#ffffff" stroke="#0a0a0a" stroke-width="2"/>
+<rect x="808.0" y="244" width="16" height="16" rx="3" fill="#0a0a0a"/>
+<rect x="830.0" y="244" width="16" height="16" rx="3" fill="#0a0a0a"/>
+<rect x="852.0" y="244" width="16" height="16" rx="3" fill="#0a0a0a"/>
+<text x="838.0" y="328.0" font-size="16" text-anchor="middle" fill="#555555">Survey</text>
+<line x1="914" y1="252" x2="956" y2="252" stroke="#0a0a0a" stroke-width="2"/>
+<rect x="957" y="209.0" width="150" height="86" rx="15" fill="#ffffff" stroke="#0a0a0a" stroke-width="2"/>
+<rect x="1020.0" y="240" width="24" height="24" rx="4" fill="#0a0a0a"/><path d="M1026.0 252 l4 4 l8 -9" fill="none" stroke="#fafafa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1032.0" y="328.0" font-size="16" text-anchor="middle" fill="#555555">End</text>
+</g></svg>
