@@ -1,12 +1,14 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme-banner-dark.svg">
-  <img src="docs/assets/readme-banner.svg" alt="AME, Autonomous Multimodal Experiment. Two participants join one session: consent, position check, video call, survey, end." width="100%">
-</picture>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme-banner-dark.svg">
+    <img src="docs/assets/readme-banner.svg" alt="AME: video chat, built into your experiment. 1, match participants into calls. 2, check the position in the browser. 3, add a phone or a tablet. 4, upload large files for you." width="100%">
+  </picture>
+</p>
 
-# AME
-
-[![License: MIT](https://img.shields.io/badge/license-MIT-0a0a0a)](LICENSE)
-[![Node.js 20.6 or later](https://img.shields.io/badge/node-%E2%89%A520.6-0a0a0a)](#requirements)
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-0a0a0a" alt="License: MIT"></a>
+  <a href="#requirements"><img src="https://img.shields.io/badge/node-%E2%89%A520.6-0a0a0a" alt="Node.js 20.6 or later"></a>
+</p>
 
 AME (say "a-meh") is a web platform for behavioural science. Researchers use
 it to design, run and manage online experiments that collect multimodal data:
